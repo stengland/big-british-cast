@@ -45,7 +45,7 @@ class BigBritishCast < Sinatra::Base
                 xml.description(article.content)
                 xml.pubDate(article.published.rfc822)
                 xml.link(article.url)
-                xml.enclosure(:url => file_url(article.title, article.url))
+                xml.enclosure(:url => file_url(article.title, article.url), :type => 'audio/x-aac')
                 xml.guid(article.url)
               end
             end
