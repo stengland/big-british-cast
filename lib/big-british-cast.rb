@@ -44,7 +44,8 @@ class BigBritishCast < Sinatra::Base
                 xml.title(article.title)
                 xml.description(article.content)
                 xml.pubDate(article.published.rfc822)
-                xml.link(file_url(article.title, article.url))
+                xml.link(article.url)
+                xml.enclosure(:url => file_url(article.title, article.url))
                 xml.guid(article.url)
               end
             end
