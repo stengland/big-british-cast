@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "big-british-cast"
   s.add_dependency('sinatra', '~> 1.1')
-  s.add_dependency('iplayer-dl', '~> 0.1.20')
   s.add_dependency('feedzirra', '~> 0.0.24')
   s.add_dependency('i18n')
 

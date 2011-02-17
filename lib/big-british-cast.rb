@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'iplayer'
 
 class BigBritishCast < Sinatra::Base
   set :app_file, __FILE__
@@ -17,6 +16,11 @@ class BigBritishCast < Sinatra::Base
       url = "#{request.scheme}://#{request.host}"
       url << ":#{request.port}"if request.port != 80
       url
+    end
+
+    def file_url(title, url)
+      url_parts = url.split('/')
+      "#{ENV['IPLAYER_URL']}#{title.gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.aac"
     end
   end
 
@@ -40,7 +44,7 @@ class BigBritishCast < Sinatra::Base
                 xml.title(article.title)
                 xml.description(article.content)
                 xml.pubDate(article.published.rfc822)
-                xml.link("#{root_url}/show/#{IPlayer::Downloader.extract_pid(article.url)}")
+                xml.link(file_url(article.title, article.url))
                 xml.guid(article.url)
               end
             end
@@ -50,13 +54,4 @@ class BigBritishCast < Sinatra::Base
     end
   end
 
-  get '/show/:id' do
-    downloader = IPlayer::Downloader.new IPlayer::Browser.new, params[:id]
-
-    available_versions = downloader.available_versions
-    raise IPlayer::MP4Unavailable if available_versions.empty?
-    version = available_versions.first
-
-    downloader.get(version.pid, File.join(settings.root, "tmp", params[:id])).read
-  end
 end
