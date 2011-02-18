@@ -1,4 +1,6 @@
 require 'sinatra/base'
+require 'net/http'
+require 'uri'
 
 class BigBritishCast < Sinatra::Base
   set :app_file, __FILE__
@@ -21,6 +23,18 @@ class BigBritishCast < Sinatra::Base
     def file_url(title, url)
       url_parts = url.split('/')
       "#{ENV['IPLAYER_URL']}#{title.gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.aac"
+    end
+
+    def get_size(url)
+      uri = uri = URI.parse(url)
+      response = nil
+      # Just get headers
+      Net::HTTP.start(uri.host, 80) do |http|
+        response = http.head(uri.path)
+      end
+      response.content_length
+    rescue
+      117373056 # Default to BBC 2 Hour show
     end
   end
 
@@ -45,7 +59,7 @@ class BigBritishCast < Sinatra::Base
                 xml.description(article.content)
                 xml.pubDate(article.published.rfc822)
                 xml.link(article.url)
-                xml.enclosure(:url => file_url(article.title, article.url), :type => 'audio/x-aac')
+                xml.enclosure(:url => file_url(article.title, article.url), :type => 'audio/x-aac', :length => get_size(file_url(article.title, article.url)))
                 xml.guid(article.url)
               end
             end
