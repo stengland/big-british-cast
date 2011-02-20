@@ -22,7 +22,7 @@ class BigBritishCast < Sinatra::Base
 
     def file_url(article)
       url_parts = article.url.split('/')
-      "#{ENV['IPLAYER_URL']}#{article.title.gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.mp3"
+      "#{ENV['IPLAYER_URL']}#{article.title.gsub(': Series',' Series').gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.mp3"
     end
 
     def get_size(article)
@@ -42,8 +42,8 @@ class BigBritishCast < Sinatra::Base
     'Hello World'
   end
 
-  get '/:title/feed.rss' do
-    feed = Feedzirra::Feed.fetch_and_parse("http://feeds.bbc.co.uk/iplayer/bbc_radio_two/list")
+  get '/:station/:title.rss' do
+    feed = Feedzirra::Feed.fetch_and_parse("http://feeds.bbc.co.uk/iplayer/#{params[:station]}/list")
     entries = feed.entries.select{|e| e.url =~ /#{params[:title]}/i}
     if entries.size > 0
       builder do |xml|
