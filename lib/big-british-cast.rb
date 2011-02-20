@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'net/http'
 require 'uri'
+require 'builder'
 
 class BigBritishCast < Sinatra::Base
   set :app_file, __FILE__
