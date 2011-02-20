@@ -20,13 +20,13 @@ class BigBritishCast < Sinatra::Base
       url
     end
 
-    def file_url(title, url)
-      url_parts = url.split('/')
-      "#{ENV['IPLAYER_URL']}#{title.gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.aac"
+    def file_url(article)
+      url_parts = article.url.split('/')
+      "#{ENV['IPLAYER_URL']}#{article.title.gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.mp3"
     end
 
-    def get_size(url)
-      uri = uri = URI.parse(url)
+    def get_size(article)
+      uri = uri = URI.parse(file_url(article))
       response = nil
       # Just get headers
       Net::HTTP.start(uri.host, 80) do |http|
@@ -59,7 +59,7 @@ class BigBritishCast < Sinatra::Base
                 xml.description(article.content)
                 xml.pubDate(article.published.rfc822)
                 xml.link(article.url)
-                xml.enclosure(:url => file_url(article.title, article.url), :type => 'audio/x-aac', :length => get_size(file_url(article.title, article.url)))
+                xml.enclosure(:url => file_url(article), :type => 'audio/x-aac', :length => get_size(article))
                 xml.guid(article.url)
               end
             end
