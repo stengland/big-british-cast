@@ -32,9 +32,9 @@ class BigBritishCast < Sinatra::Base
       Net::HTTP.start(uri.host, 80) do |http|
         response = http.head(uri.path)
       end
-      response.content_length
+      response.content_length.to_i
     rescue
-      117373056 # Default to BBC 2 Hour show
+      0
     end
   end
 
@@ -54,13 +54,15 @@ class BigBritishCast < Sinatra::Base
             xml.link(feed.url)
             xml.language('en-gb')
             for article in entries
-              xml.item do
-                xml.title(article.title)
-                xml.description(article.content)
-                xml.pubDate(article.published.rfc822)
-                xml.link(article.url)
-                xml.enclosure(:url => file_url(article), :type => 'audio/x-aac', :length => get_size(article))
-                xml.guid(article.url)
+              if (size = get_size(article)) > 0 # Only put in feed if file exists
+                xml.item do
+                  xml.title(article.title)
+                  xml.description(article.content)
+                  xml.pubDate(article.published.rfc822)
+                  xml.link(article.url)
+                  xml.enclosure(:url => file_url(article), :type => 'audio/x-aac', :length => size)
+                  xml.guid(article.url)
+                end
               end
             end
           end
