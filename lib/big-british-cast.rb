@@ -23,7 +23,7 @@ class BigBritishCast < Sinatra::Base
 
     def file_url(article)
       url_parts = article.url.split('/')
-      "#{ENV['IPLAYER_URL']}#{article.title.gsub(': Series',' Series').gsub(':',' -').gsub(' ','_')}_#{url_parts[-2]}_default.mp3"
+      "#{ENV['IPLAYER_URL']}#{article.title.gsub(': Series',' Series').gsub(':',' -').gsub("'",'').gsub(' ','_')}_#{url_parts[-2]}_default.mp3"
     end
 
     def get_size(article)
